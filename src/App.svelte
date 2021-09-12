@@ -1,22 +1,26 @@
 <script>
   import PeriodCard from './lib/PeriodCard.svelte'
   import ProfileCard from './lib/ProfileCard.svelte'
+  import { times } from './stores'
 
-  const cards = ['work', 'play', 'study', 'exercise', 'social', 'self-care']
+  const username = 'Jeremy Robson'
+  const userAvatar = 'images/image-jeremy.png'
+  const userTimes = $times
+  let period = 'daily'
 
-  const handlePeriodChange = ({ detail: period }) => {
-    console.log(period)
-  }
+  const handlePeriodChange = ({ detail: value }) => (period = value)
 </script>
 
 <main class="h-full">
   <section class="container grid place-items-center h-full">
-    <div class="grid grid-cols-4 gap-6 grid-rows-2 max-w-5xl mx-auto">
-      <ProfileCard on:periodChanged={handlePeriodChange} />
+    <div class="block desktop:grid grid-cols-4 gap-x-6 grid-rows-2 max-w-5xl mx-auto">
+      <ProfileCard {username} avatar={userAvatar} on:periodChanged={handlePeriodChange} />
 
-      {#each cards as card}
-        <PeriodCard type={card} />
-      {/each}
+      {#if userTimes.length && period}
+        {#each userTimes as { type, title, timeframes }}
+          <PeriodCard {type} {title} timeframes={timeframes[period]} />
+        {/each}
+      {/if}
     </div>
   </section>
 </main>
@@ -26,15 +30,13 @@
   @tailwind components;
   @tailwind utilities;
 
-  @layer base {
-    html,
-    body,
-    #app {
-      @apply h-full;
-    }
-    body {
-      @apply bg-blue-very-dark text-white;
-      @apply font-light;
-    }
+  html,
+  body,
+  #app {
+    @apply h-full;
+  }
+  body {
+    @apply bg-blue-very-dark text-white;
+    @apply font-light;
   }
 </style>
